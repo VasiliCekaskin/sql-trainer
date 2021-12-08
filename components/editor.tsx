@@ -1,19 +1,33 @@
-import React from "react";
-import AceEditor from "react-ace";
-
-import "ace-builds/src-noconflict/mode-sql";
-import "ace-builds/src-noconflict/theme-tomorrow";
+import { UnControlled as CodeMirror } from "react-codemirror2";
+import "codemirror/mode/sql/sql";
+import "codemirror/lib/codemirror.css";
+import "codemirror/theme/monokai.css";
+import "codemirror/keymap/sublime";
+import { useEffect, useState } from "react";
 
 const Editor = (props) => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
   return (
-    <div className="border-4">
-      <AceEditor
-        height="200px"
-        fontSize="18px"
-        showGutter={false}
-        mode="sql"
-        theme="tomorrow"
+    <div
+      className="border-4 border-gray-100 dark:border-darkBorder rounded-md w-full"
+      style={{ height: "30vh" }}
+    >
+      <CodeMirror
+        className="w-full h-full text-sm sm:text-base shadow-md overflow-hidden"
         {...props}
+        value={props.value}
+        options={{
+          mode: "sql",
+          lineNumbers: false,
+          theme: "monokai",
+          keyMap: "sublime",
+        }}
+        onChange={(_, __, value) => {
+          props.setValue(value);
+        }}
+        name="editor"
       />
     </div>
   );
