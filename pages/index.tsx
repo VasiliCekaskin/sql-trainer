@@ -1,12 +1,28 @@
 import type { NextPage } from "next";
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import lessonOne from "../public/images/lesson_1.png";
+import createSqlWasm from "sql-wasm";
 
 const Editor = dynamic(import("../components/editor"), { ssr: false });
 
 const Home: NextPage = () => {
+  useEffect(() => {
+    (async () => {
+      const sql = await createSqlWasm({
+        wasmUrl: new URL(
+          "../node_modules/sql-wasm/dist/sqlite3.wasm",
+          import.meta.url
+        ).toString(),
+      });
+      // From here on, the SQL.js API can be used...
+      const db = new sql.Database();
+
+      console.log(db);
+    })();
+  });
+
   return (
     <div className="grid grid-cols-2">
       <div className="overflow-y-scroll h-full">
@@ -33,7 +49,7 @@ const Home: NextPage = () => {
           </h2>
 
           <div className="mt-6 flex justify-center">
-            <table className="table-auto border-4">
+            {/* <table className="table-auto border-4">
               <th className="border-2 p-2">Name</th>
               <tr className="border-2 p-2">
                 <td className="border-2 p-1">Berliner Allee 3</td>
@@ -45,7 +61,7 @@ const Home: NextPage = () => {
               <tr className="border-2 p-2">
                 <td className="border-2 p-1">Eine schlaue Straße</td>
               </tr>
-            </table>
+            </table> */}
           </div>
         </div>
       </div>
@@ -63,7 +79,7 @@ const Home: NextPage = () => {
             </h2>
 
             <div className="mt-6 flex justify-center">
-              <table className="table-auto border-4">
+              {/* <table className="table-auto border-4">
                 <th className="border-2 p-2">Name</th>
                 <tr className="border-2 p-2">
                   <td className="border-2 p-1">Berliner Allee 3</td>
@@ -75,7 +91,7 @@ const Home: NextPage = () => {
                 <tr className="border-2 p-2">
                   <td className="border-2 p-1">Eine schlaue Straße</td>
                 </tr>
-              </table>
+              </table> */}
             </div>
           </div>
         </div>
