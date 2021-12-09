@@ -3,18 +3,17 @@ import "codemirror/mode/sql/sql";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/monokai.css";
 import "codemirror/keymap/sublime";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-const Editor = (props) => {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
+const Editor = (props: any) => {
+  const [cursorPosition, setCursorPosition] = useState();
   return (
     <div
-      className="border-4 border-gray-100 dark:border-darkBorder rounded-md w-full"
+      className="border-4 border-gray-100 dark:border-darkBorder rounded-md w-full h-52"
       style={{ height: "30vh" }}
     >
       <CodeMirror
+        autoCursor
         className="w-full h-full text-sm sm:text-base shadow-md overflow-hidden"
         {...props}
         value={props.value}
@@ -22,9 +21,10 @@ const Editor = (props) => {
           mode: "sql",
           lineNumbers: false,
           theme: "monokai",
-          keyMap: "sublime",
         }}
-        onChange={(_, __, value) => {
+        cursor={cursorPosition}
+        onChange={(editor, __, value) => {
+          setCursorPosition(editor.getDoc().getCursor());
           props.setValue(value);
         }}
         name="editor"

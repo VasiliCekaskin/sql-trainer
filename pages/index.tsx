@@ -12,18 +12,23 @@ const Editor = dynamic(import("../components/editor"), {
 
 const Home: NextPage = () => {
   const [DB, setDB] = useState<Database>();
+  const [lastSuccessMessage, setLastSuccessMessage] = useState("");
   const [lastErrorMessage, setLastErrorMessage] = useState("");
   const [lastResults, setLastResults] = useState<QueryResults[]>();
   const [currentQuery, setCurrentQuery] = useState("");
 
   const runStatement = async () => {
     setLastErrorMessage("");
+    setLastSuccessMessage("");
     try {
       if (currentQuery) {
         const res = DB?.exec(currentQuery);
+
+        setLastSuccessMessage(`${currentQuery} successful`);
         setLastResults(res);
       }
     } catch (error) {
+      setLastSuccessMessage("");
       error && setLastErrorMessage(String(error));
     }
   };
@@ -31,7 +36,12 @@ const Home: NextPage = () => {
   useEffect(() => {
     if (!DB) {
       (async () => {
-        setDB(await createDB());
+        setDB(
+          await createDB(
+            "CREATE TABLE Adressen(nr integer primary key, name varchar, strasse varchar, hausnr integer, plz varchar, ort varchar); \
+INSERT INTO Adressen(name, strasse, hausnr, plz, ort) VALUES ('Peter', 'westtangente', 12, '40480', 'Ratingen'), ('Günther', 'Düsseldorferstrasse', 21, '40472', 'Düsseldorf');"
+          )
+        );
       })();
     }
   });
@@ -96,6 +106,9 @@ const Home: NextPage = () => {
           </button>
 
           <div>
+            <h2 className="font-bold text-xl text-green-600 block mt-10">
+              {lastSuccessMessage}
+            </h2>
             <h2 className="font-bold text-xl text-red-600 block mt-10">
               {lastErrorMessage}
             </h2>
@@ -106,18 +119,24 @@ const Home: NextPage = () => {
             <div className="mt-6 flex justify-center">
               <table className="table-auto border-4">
                 <thead>
-                  {lastResults &&
-                    lastResults.at(-1)?.columns.map((column) => (
-                      <tr key={column}>
-                        <th className="border-2 p-2">{column}</th>
-                      </tr>
-                    ))}
+                  <tr>
+                    {lastResults &&
+                      lastResults.at(-1)?.columns.map((column) => (
+                        <th key={column} className="border-2 p-2">
+                          {column}
+                        </th>
+                      ))}
+                  </tr>
                 </thead>
                 <tbody>
                   {lastResults &&
-                    lastResults.at(-1)?.values.map((value) => (
-                      <tr key={value.at(0)} className="border-2 p-2">
-                        <td className="border-2 p-1">{value}</td>
+                    lastResults.at(-1)?.values.map((valuesArray) => (
+                      <tr key={valuesArray.toString()} className="border-2 p-2">
+                        {valuesArray.map((value) => (
+                          <td key={value} className="border-2 p-1">
+                            {value}
+                          </td>
+                        ))}
                       </tr>
                     ))}
                 </tbody>
