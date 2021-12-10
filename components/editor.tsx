@@ -2,7 +2,7 @@ import { UnControlled as CodeMirror } from "react-codemirror2";
 if (typeof window !== "undefined" && typeof window.navigator !== "undefined") {
   require("codemirror/mode/sql/sql");
   require("codemirror/lib/codemirror.css");
-  require("codemirror/theme/duotone-light.css");
+  require("codemirror/theme/monokai.css");
   require("codemirror/keymap/sublime");
 }
 import { useState } from "react";
@@ -22,7 +22,7 @@ const Editor = (props: any) => {
         options={{
           mode: "sql",
           lineNumbers: false,
-          theme: "duotone-light",
+          theme: "monokai",
         }}
         cursor={cursorPosition}
         onChange={(editor, __, value) => {

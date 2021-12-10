@@ -53,7 +53,9 @@ const Lesson = (
     <div className="grid grid-cols-2">
       <div className="overflow-y-scroll h-full">
         <div className="m-6">
-          <h1 className="font-bold text-xl text-gray-600 block">Aufgabe 1</h1>
+          <h1 className="font-bold text-xl text-gray-600 block">
+            Aufgabe {lessonNumber}
+          </h1>
           <p className="mt-1">{description}</p>
           <Image
             className="w-1/2"
@@ -65,8 +67,8 @@ const Lesson = (
         </div>
 
         <div>
-          <h2 className="font-bold text-xl text-gray-600 block mt-10">
-            Aufgabe {lessonNumber}
+          <h2 className="font-bold ml-6 text-xl text-gray-600 block mt-10">
+            Beispiel Lösung {lessonNumber}
           </h2>
 
           <div className="mt-6 flex justify-center">
@@ -99,7 +101,7 @@ const Lesson = (
 
           <Editor value={currentQuery} setValue={setCurrentQuery} />
 
-          <button className="mt-10 w-full border-4" onClick={runStatement}>
+          <button className="mt-10 border-4" onClick={runStatement}>
             Run SQL
           </button>
 
