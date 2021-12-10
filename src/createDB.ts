@@ -1,6 +1,6 @@
 import createSqlWasm from "sql-wasm";
 
-export const createDB = async () => {
+export const createDB = async (dbPath: string) => {
   const sql = await createSqlWasm({
     wasmUrl: new URL(
       "../node_modules/sql-wasm/dist/sqlite3.wasm",
@@ -8,7 +8,9 @@ export const createDB = async () => {
     ).toString(),
   });
 
-  const db = new sql.Database();
+  const dataPromise = await fetch(dbPath).then((res) => res.arrayBuffer());
+
+  const db = new sql.Database(new Uint8Array(dataPromise));
 
   return db;
 };

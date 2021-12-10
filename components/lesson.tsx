@@ -1,20 +1,16 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import lessonOne from "../public/images/lesson_1.png";
 import { createDB } from "../src/createDB";
 import { Database, QueryResults } from "sql-wasm";
 import dynamic from "next/dynamic";
+import type { LessonConfig } from "../src/lessons/types";
+
 const Editor = dynamic(import("../components/editor"), {
   ssr: false,
   loading: () => <div>loading</div>,
 });
 
-const Lesson = (
-  lessonNumber: number,
-  description: string,
-  task: string,
-  initStatement: string
-) => {
+const Lesson = (config: LessonConfig) => {
   const [DB, setDB] = useState<Database>();
   const [lastSuccessMessage, setLastSuccessMessage] = useState("");
   const [lastErrorMessage, setLastErrorMessage] = useState("");
@@ -28,6 +24,8 @@ const Lesson = (
       if (currentQuery) {
         const res = DB?.exec(currentQuery);
 
+        console.log(res);
+
         setLastSuccessMessage(`${currentQuery} successful`);
         setLastResults(res);
       }
@@ -40,9 +38,7 @@ const Lesson = (
   useEffect(() => {
     if (!DB) {
       (async () => {
-        const db = await createDB();
-
-        db.exec(initStatement);
+        const db = await createDB(config.dbPath);
 
         setDB(db);
       })();
@@ -54,21 +50,22 @@ const Lesson = (
       <div className="overflow-y-scroll h-full">
         <div className="m-6">
           <h1 className="font-bold text-xl text-gray-600 block">
-            Aufgabe {lessonNumber}
+            Aufgabe {config.lessonNr}
           </h1>
-          <p className="mt-1">{description}</p>
+          <p className="mt-1">{config.description}</p>
           <Image
-            className="w-1/2"
-            src={lessonOne}
-            alt="lesson 1 database"
+            src={config.imagePath}
+            width={1000}
+            height={400}
+            alt={`lesson ${config.lessonNr} database structure`}
           ></Image>
 
-          <p className="mt-1">{task}</p>
+          <p className="mt-1">{config.taskDescription}</p>
         </div>
 
         <div>
           <h2 className="font-bold ml-6 text-xl text-gray-600 block mt-10">
-            Beispiel Lösung {lessonNumber}
+            Beispiel Lösung
           </h2>
 
           <div className="mt-6 flex justify-center">
@@ -96,12 +93,12 @@ const Lesson = (
       </div>
 
       <div className="overflow-y-scroll h-full">
-        <div className="m-6 mr-0">
+        <div className="m-6">
           <h1 className="font-bold text-xl text-gray-600 block">SQL Editor</h1>
 
           <Editor value={currentQuery} setValue={setCurrentQuery} />
 
-          <button className="mt-10 border-4" onClick={runStatement}>
+          <button className="mt-2 border-2 w-full" onClick={runStatement}>
             Run SQL
           </button>
 
