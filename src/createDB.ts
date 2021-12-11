@@ -10,6 +10,7 @@ export const createDB = async (dbPath: string) => {
 
   const dataPromise = await fetch(dbPath).then((res) => res.arrayBuffer());
 
+  // @ts-ignore
   const db = new sql.Database(new Uint8Array(dataPromise));
 
   return db;

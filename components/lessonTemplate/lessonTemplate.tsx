@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { createDB } from "../src/createDB";
+import { createDB } from "../../src/createDB";
 import { Database, QueryResults } from "sql-wasm";
 import dynamic from "next/dynamic";
-import type { LessonConfig } from "../src/lessons/types";
+import type { LessonConfig } from "./types";
 
-const Editor = dynamic(import("../components/editor"), {
+const Editor = dynamic(import("../editor"), {
   ssr: false,
   loading: () => <div>loading</div>,
 });
 
-const Lesson = (config: LessonConfig) => {
+const LessonTemplate = (config: LessonConfig) => {
   const [DB, setDB] = useState<Database>();
   const [lastSuccessMessage, setLastSuccessMessage] = useState("");
   const [lastErrorMessage, setLastErrorMessage] = useState("");
@@ -24,8 +24,6 @@ const Lesson = (config: LessonConfig) => {
       if (currentQuery) {
         const res = DB?.exec(currentQuery);
 
-        console.log(res);
-
         setLastSuccessMessage(`${currentQuery} successful`);
         setLastResults(res);
       }
@@ -38,7 +36,9 @@ const Lesson = (config: LessonConfig) => {
   useEffect(() => {
     if (!DB) {
       (async () => {
-        const db = await createDB(config.dbPath);
+        const db = await createDB(
+          `/assets/databases/lesson${config.lessonNr}.sqlite`
+        );
 
         setDB(db);
       })();
@@ -54,7 +54,7 @@ const Lesson = (config: LessonConfig) => {
           </h1>
           <p className="mt-1">{config.description}</p>
           <Image
-            src={config.imagePath}
+            src={`/assets/images/lesson${config.lessonNr}.png`}
             width={1000}
             height={400}
             alt={`lesson ${config.lessonNr} database structure`}
@@ -118,8 +118,8 @@ const Lesson = (config: LessonConfig) => {
                 <thead>
                   <tr>
                     {lastResults &&
-                      lastResults.at(-1)?.columns.map((column) => (
-                        <th key={column} className="border-2 p-2">
+                      lastResults.at(-1)?.columns.map((column, index) => (
+                        <th key={index} className="border-2 p-2">
                           {column}
                         </th>
                       ))}
@@ -127,10 +127,10 @@ const Lesson = (config: LessonConfig) => {
                 </thead>
                 <tbody>
                   {lastResults &&
-                    lastResults.at(-1)?.values.map((valuesArray) => (
-                      <tr key={valuesArray.toString()} className="border-2 p-2">
-                        {valuesArray.map((value) => (
-                          <td key={value} className="border-2 p-1">
+                    lastResults.at(-1)?.values.map((valuesArray, index) => (
+                      <tr key={index} className="border-2 p-2">
+                        {valuesArray.map((value, index) => (
+                          <td key={index} className="border-2 p-1">
                             {value}
                           </td>
                         ))}
@@ -146,4 +146,4 @@ const Lesson = (config: LessonConfig) => {
   );
 };
 
-export default Lesson;
+export default LessonTemplate;
